@@ -5,6 +5,7 @@ import { Sidebar } from "@/components/layout/Sidebar";
 import { RightSidebar } from "@/components/layout/RightSidebar";
 import { Topbar } from "@/components/layout/Topbar";
 import { Player } from "@/components/player/Player";
+import { AuthGuard } from "@/components/auth/AuthGuard";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -21,15 +22,17 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`${inter.className} bg-[#121212] text-white overflow-hidden h-screen flex flex-col`}>
-        <div className="flex-1 flex overflow-hidden pb-24">
-          <Sidebar />
-          <main className="flex-1 overflow-y-auto bg-[#121212] relative rounded-lg mt-2 mb-2 mr-2">
-            <Topbar />
-            {children}
-          </main>
-          <RightSidebar />
-        </div>
-        <Player />
+        <AuthGuard>
+          <div className="flex-1 flex overflow-hidden pb-24">
+            <Sidebar />
+            <main className="flex-1 overflow-y-auto bg-[#121212] relative rounded-lg mt-2 mb-2 mr-2">
+              <Topbar />
+              {children}
+            </main>
+            <RightSidebar />
+          </div>
+          <Player />
+        </AuthGuard>
       </body>
     </html>
   );
