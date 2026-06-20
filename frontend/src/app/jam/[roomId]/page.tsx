@@ -67,7 +67,9 @@ export default function RoomPage() {
 
     const userId = user?.username || Math.random().toString(36).substring(2, 9);
     
-    newSocket.emit('join-room', { roomId, userId });
+    newSocket.on('connect', () => {
+      newSocket.emit('join-room', { roomId, userId });
+    });
 
     newSocket.on('user-joined', (data) => {
       addParticipant(data);
