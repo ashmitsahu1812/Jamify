@@ -99,7 +99,9 @@ export default function RoomPage() {
   }, [roomId, isHostParam, user]);
 
   const copyLink = () => {
-    navigator.clipboard.writeText(window.location.href);
+    const url = new URL(window.location.href);
+    url.searchParams.delete('host');
+    navigator.clipboard.writeText(url.toString());
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
   };
