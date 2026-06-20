@@ -1,12 +1,14 @@
 'use client';
 import { useJamStore } from '@/store/useJamStore';
 import { usePlayerStore } from '@/store/usePlayerStore';
+import { useAuthStore } from '@/store/useAuthStore';
 import { Send, Users } from 'lucide-react';
 import { useState } from 'react';
 
 export function RightSidebar() {
-  const { roomId, chat, addMessage, socket, participants } = useJamStore();
+  const { roomId, chat, socket, participants } = useJamStore();
   const { queue } = usePlayerStore();
+  const { user } = useAuthStore();
   const [msg, setMsg] = useState('');
 
   if (!roomId) return null;
@@ -15,9 +17,7 @@ export function RightSidebar() {
     e.preventDefault();
     if (!msg.trim() || !socket) return;
     
-    const newMsg = { user: 'Me', message: msg, timestamp: Date.now() };
-    socket.emit('chat-message', { roomId, message: msg, user: 'Me' });
-    addMessage(newMsg);
+    socket.emit('chat-message', { roomId, message: msg, user: user?.name || 'Guest' });
     setMsg('');
   };
 

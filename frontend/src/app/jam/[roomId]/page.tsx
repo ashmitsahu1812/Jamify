@@ -108,14 +108,9 @@ export default function RoomPage() {
 
   const sendChat = (e: React.FormEvent) => {
     e.preventDefault();
-    if (chatInput.trim() && socket) {
-      socket.emit('chat-message', { 
-        roomId, 
-        message: chatInput.trim(), 
-        user: user?.username || 'Guest' 
-      });
-      setChatInput('');
-    }
+    if (!chatInput.trim() || !socket) return;
+    socket.emit('chat-message', { roomId, message: chatInput, user: user?.username || 'Guest' });
+    setChatInput('');
   };
 
   return (
@@ -190,12 +185,28 @@ export default function RoomPage() {
                     onClick={() => handlePlaySong(track)}
                   >
                     <img src={track.coverUrl} alt={track.title} className="w-10 h-10 rounded mr-3" />
-                    <div className="flex-1 min-w-0">
+                    <div className="flex-1 min-w-0" onClick={() => handlePlaySong(track)}>
                       <p className="text-white font-semibold truncate group-hover:text-[#1ED760] transition-colors">{track.title}</p>
                       <p className="text-zinc-400 text-sm truncate">{track.artist}</p>
                     </div>
-                    <button className="w-8 h-8 flex items-center justify-center bg-[#1ED760] rounded-full text-black opacity-0 group-hover:opacity-100 transition-opacity">
+                    <button 
+                      onClick={() => handlePlaySong(track)}
+                      className="w-8 h-8 flex items-center justify-center bg-[#1ED760] rounded-full text-black opacity-0 group-hover:opacity-100 transition-opacity mr-2 hover:scale-105"
+                      title="Play Now"
+                    >
                       <Play size={14} fill="currentColor" className="ml-0.5" />
+                    </button>
+                    <button 
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        addToQueue(track);
+                        setSearchQuery('');
+                        setSearchResults([]);
+                      }}
+                      className="w-8 h-8 flex items-center justify-center bg-zinc-800 rounded-full text-white opacity-0 group-hover:opacity-100 transition-opacity hover:bg-zinc-700 hover:scale-105"
+                      title="Add to Queue"
+                    >
+                      +
                     </button>
                   </div>
                 ))}
@@ -204,26 +215,29 @@ export default function RoomPage() {
           </div>
         )}
         
-        <div className="flex-1">
+        <div className="flex-1 lg:hidden">
           <h2 className="text-xl font-bold mb-4">Queue</h2>
-          <div className="space-y-2">
-            {queue.length > 0 ? queue.map((track, i) => (
-               <div key={i} className="flex items-center bg-[#181818] hover:bg-[#282828] p-3 rounded-md transition-colors group">
-                 <img src={track.coverUrl} alt="cover" className="w-12 h-12 rounded mr-4" />
-                 <div className="flex-1 min-w-0">
-                   <p className="text-white font-semibold truncate">{track.title}</p>
-                   <p className="text-zinc-400 text-sm truncate">{track.artist}</p>
-                 </div>
-               </div>
-            )) : (
-              <p className="text-zinc-500">Queue is empty.</p>
+          <div className="space-y-2 mb-8">
+            {queue.map((track, i) => (
+              <div key={i} className="flex items-center p-3 bg-[#181818] rounded-lg border border-zinc-800">
+                <img src={track.coverUrl} alt={track.title} className="w-10 h-10 rounded mr-3" />
+                <div>
+                  <p className="text-white font-semibold text-sm truncate">{track.title}</p>
+                  <p className="text-zinc-400 text-xs truncate">{track.artist}</p>
+                </div>
+              </div>
+            ))}
+            {queue.length === 0 && (
+              <p className="text-zinc-500 italic text-sm">Queue is empty.</p>
             )}
           </div>
         </div>
+
+        </div>
       </div>
 
-      {/* Right Column: Chat Room */}
-      <div className="w-full md:w-80 bg-[#181818] border border-zinc-800 rounded-xl flex flex-col shrink-0 h-[400px] md:h-[calc(100vh-200px)]">
+      {/* Right Column: Chat Room (Hidden on Desktop, as RightSidebar handles it) */}
+      <div className="w-full md:w-80 bg-[#181818] border border-zinc-800 rounded-xl flex-col shrink-0 h-[400px] md:h-[calc(100vh-200px)] flex lg:hidden">
         <div className="p-4 border-b border-zinc-800 flex items-center gap-2 font-bold">
           <MessageSquare size={18} /> Room Chat
         </div>
