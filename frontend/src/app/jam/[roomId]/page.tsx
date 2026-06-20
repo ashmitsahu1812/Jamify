@@ -3,9 +3,9 @@ import { useEffect, useState, useRef } from 'react';
 import { useParams, useSearchParams, useRouter } from 'next/navigation';
 import { io } from 'socket.io-client';
 import { useJamStore } from '@/store/useJamStore';
-import { usePlayerStore } from '@/store/usePlayerStore';
+import { usePlayerStore, Track } from '@/store/usePlayerStore';
 import { useAuthStore } from '@/store/useAuthStore';
-import { Users, Link as LinkIcon, Check, MessageSquare, Send } from 'lucide-react';
+import { Users, Link as LinkIcon, Check, MessageSquare, Send, Search as SearchIcon, Play } from 'lucide-react';
 import { API_URL } from '@/config';
 
 export default function RoomPage() {
@@ -22,7 +22,35 @@ export default function RoomPage() {
   const [copied, setCopied] = useState(false);
   const [chatInput, setChatInput] = useState('');
   
+  // Host Search Feature
+  const [searchQuery, setSearchQuery] = useState('');
+  const [searchResults, setSearchResults] = useState<Track[]>([]);
+  
   const chatEndRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!searchQuery.trim()) {
+      setSearchResults([]);
+      return;
+    }
+    const delayDebounceFn = setTimeout(async () => {
+      try {
+        const res = await fetch(`${API_URL}/api/tracks/search?q=${searchQuery}`);
+        const data = await res.json();
+        setSearchResults(data);
+      } catch (err) {
+        console.error(err);
+      }
+    }, 500);
+
+    return () => clearTimeout(delayDebounceFn);
+  }, [searchQuery]);
+
+  const handlePlaySong = (track: Track) => {
+    setCurrentTrack(track);
+    setSearchQuery('');
+    setSearchResults([]);
+  };
 
   useEffect(() => {
     // Scroll to bottom of chat when new message arrives
@@ -126,6 +154,44 @@ export default function RoomPage() {
             <p className="text-zinc-500 italic">No track currently playing. {isHostParam && "Play something to start."}</p>
           )}
         </div>
+        
+        {isHostParam && (
+          <div className="mb-8 relative z-10">
+            <h2 className="text-xl font-bold mb-4">Change Song</h2>
+            <div className="relative">
+              <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                <SearchIcon className="h-5 w-5 text-zinc-400" />
+              </div>
+              <input
+                type="text"
+                placeholder="Search for a song to play..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="w-full bg-[#181818] text-white rounded-full py-3 pl-12 pr-4 border border-zinc-800 focus:border-[#1ED760] outline-none transition-colors"
+              />
+            </div>
+            {searchResults.length > 0 && (
+              <div className="absolute w-full mt-2 bg-[#181818] border border-zinc-800 rounded-xl shadow-2xl overflow-hidden max-h-64 overflow-y-auto z-20">
+                {searchResults.map((track) => (
+                  <div 
+                    key={track._id} 
+                    className="flex items-center p-3 hover:bg-[#282828] cursor-pointer transition-colors group"
+                    onClick={() => handlePlaySong(track)}
+                  >
+                    <img src={track.coverUrl} alt={track.title} className="w-10 h-10 rounded mr-3" />
+                    <div className="flex-1 min-w-0">
+                      <p className="text-white font-semibold truncate group-hover:text-[#1ED760] transition-colors">{track.title}</p>
+                      <p className="text-zinc-400 text-sm truncate">{track.artist}</p>
+                    </div>
+                    <button className="w-8 h-8 flex items-center justify-center bg-[#1ED760] rounded-full text-black opacity-0 group-hover:opacity-100 transition-opacity">
+                      <Play size={14} fill="currentColor" className="ml-0.5" />
+                    </button>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        )}
         
         <div className="flex-1">
           <h2 className="text-xl font-bold mb-4">Queue</h2>
