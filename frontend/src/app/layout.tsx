@@ -6,6 +6,7 @@ import { RightSidebar } from "@/components/layout/RightSidebar";
 import { Topbar } from "@/components/layout/Topbar";
 import { Player } from "@/components/player/Player";
 import { AuthGuard } from "@/components/auth/AuthGuard";
+import { GoogleOAuthProvider } from '@react-oauth/google';
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -22,8 +23,9 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`${inter.className} bg-[#121212] text-white overflow-hidden h-screen flex flex-col`}>
-        <AuthGuard>
-          <div className="flex-1 flex overflow-hidden pb-24">
+        <GoogleOAuthProvider clientId={process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID || ""}>
+          <AuthGuard>
+            <div className="flex-1 flex overflow-hidden pb-24">
             <Sidebar />
             <main className="flex-1 overflow-y-auto bg-[#121212] relative rounded-lg mt-2 mb-2 mr-2">
               <Topbar />
@@ -32,7 +34,8 @@ export default function RootLayout({
             <RightSidebar />
           </div>
           <Player />
-        </AuthGuard>
+          </AuthGuard>
+        </GoogleOAuthProvider>
       </body>
     </html>
   );

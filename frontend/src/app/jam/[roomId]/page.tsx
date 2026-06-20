@@ -16,7 +16,7 @@ export default function RoomPage() {
   const roomId = params.roomId as string;
   const isHostParam = searchParams.get('host') === 'true';
   
-  const { setRoomId, setIsHost, setSocket, setParticipants, leaveRoom, chat, addMessage, socket } = useJamStore();
+  const { setRoomId, setIsHost, setSocket, setParticipants, addParticipant, leaveRoom, chat, addMessage, socket } = useJamStore();
   const { queue, currentTrack, setCurrentTrack, setQueue } = usePlayerStore();
   const { user } = useAuthStore();
   const [copied, setCopied] = useState(false);
@@ -42,7 +42,7 @@ export default function RoomPage() {
     newSocket.emit('join-room', { roomId, userId });
 
     newSocket.on('user-joined', (data) => {
-      setParticipants((prev) => [...prev, data]);
+      addParticipant(data);
     });
 
     newSocket.on('chat-message', (data) => {

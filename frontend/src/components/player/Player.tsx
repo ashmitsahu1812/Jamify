@@ -27,7 +27,7 @@ export function Player() {
   
   const playerRef = useRef<YouTubePlayer>(null);
   const isSeekingRef = useRef(false);
-  const intervalRef = useRef<NodeJS.Timeout>();
+  const intervalRef = useRef<NodeJS.Timeout | null>(null);
 
   // Progress Tracker
   useEffect(() => {
@@ -39,9 +39,9 @@ export function Player() {
         }
       }, 1000);
     } else {
-      clearInterval(intervalRef.current);
+      if (intervalRef.current) clearInterval(intervalRef.current);
     }
-    return () => clearInterval(intervalRef.current);
+    return () => { if (intervalRef.current) clearInterval(intervalRef.current); };
   }, [isPlaying, setCurrentTime]);
 
   // Volume Sync
@@ -153,7 +153,7 @@ export function Player() {
     setCurrentTime(parseFloat(e.target.value));
   };
 
-  const handleSeekMouseUp = (e: React.MouseEvent<HTMLInputElement>) => {
+  const handleSeekMouseUp = (e: React.MouseEvent<HTMLInputElement> | React.TouchEvent<HTMLInputElement>) => {
     isSeekingRef.current = false;
     const time = parseFloat((e.target as HTMLInputElement).value);
     if (playerRef.current) {

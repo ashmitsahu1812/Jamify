@@ -18,6 +18,7 @@ interface JamState {
   setSocket: (socket: Socket | null) => void;
   addMessage: (msg: ChatMessage) => void;
   setParticipants: (participants: any[]) => void;
+  addParticipant: (participant: any) => void;
   leaveRoom: () => void;
 }
 
@@ -33,5 +34,6 @@ export const useJamStore = create<JamState>((set) => ({
   setSocket: (socket) => set({ socket }),
   addMessage: (msg) => set((state) => ({ chat: [...state.chat, msg] })),
   setParticipants: (participants) => set({ participants }),
+  addParticipant: (participant) => set((state) => ({ participants: [...state.participants, participant] })),
   leaveRoom: () => set({ roomId: null, isHost: false, participants: [], chat: [] })
 }));
