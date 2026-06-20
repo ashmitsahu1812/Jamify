@@ -184,7 +184,15 @@ export function Player() {
   if (!currentTrack) return null;
 
   return (
-    <div className="h-20 md:h-24 bg-[#181818] border-t border-zinc-800 flex items-center justify-between px-2 md:px-4 fixed bottom-[80px] md:bottom-0 w-full z-40 md:z-50">
+    <div className="h-16 md:h-24 bg-[#181818] border-t border-zinc-800 flex items-center justify-between px-3 md:px-4 fixed bottom-[80px] md:bottom-0 w-full z-40 md:z-50">
+      {/* Absolute Bottom Progress bar for mobile only */}
+      <div className="absolute bottom-0 left-0 w-full h-0.5 md:hidden bg-zinc-800">
+        <div 
+          className="h-full bg-[#1ED760]" 
+          style={{ width: `${(currentTime / (duration || 1)) * 100}%` }}
+        />
+      </div>
+
       <YouTube
         videoId={currentTrack._id}
         opts={{
@@ -194,7 +202,7 @@ export function Player() {
         }}
         onReady={(e) => {
           playerRef.current = e.target;
-          setDuration(currentTrack.duration); // YouTube API sometimes delays duration, use the one from search
+          setDuration(currentTrack.duration);
           if (isMuted) e.target.mute();
           else e.target.setVolume(volume * 100);
           if (isPlaying) e.target.playVideo();
@@ -202,12 +210,13 @@ export function Player() {
         onEnd={playNext}
         className="absolute opacity-0 pointer-events-none"
       />
+      
       {/* Left: Track Info */}
-      <div className="flex items-center w-1/3 md:w-1/4 min-w-[120px] md:min-w-[180px]">
-        <img src={currentTrack.coverUrl} alt="Cover" className="w-10 h-10 md:w-14 md:h-14 rounded-md shadow-lg" />
-        <div className="ml-2 md:ml-4 overflow-hidden">
-          <p className="text-white text-xs md:text-sm font-semibold hover:underline cursor-pointer truncate">{currentTrack.title}</p>
-          <p className="text-zinc-400 text-[10px] md:text-xs hover:underline cursor-pointer truncate">{currentTrack.artist}</p>
+      <div className="flex items-center flex-1 min-w-0 mr-4 md:w-1/4 md:flex-none">
+        <img src={currentTrack.coverUrl} alt="Cover" className="w-10 h-10 md:w-14 md:h-14 rounded-md shadow-lg shrink-0 object-cover" />
+        <div className="ml-3 overflow-hidden flex-1">
+          <p className="text-white text-xs md:text-sm font-semibold truncate">{currentTrack.title}</p>
+          <p className="text-zinc-400 text-[10px] md:text-xs truncate">{currentTrack.artist}</p>
         </div>
         {user && (
           <div className="hidden md:flex items-center ml-4 relative">
@@ -241,18 +250,21 @@ export function Player() {
       </div>
 
       {/* Center: Controls */}
-      <div className="flex flex-col items-center justify-center w-1/3 md:w-2/4 max-w-2xl">
-        <div className="flex items-center gap-3 md:gap-6 mb-1 md:mb-2">
+      <div className="flex items-center justify-end md:justify-center md:flex-col md:w-2/4 md:max-w-2xl shrink-0">
+        <div className="flex items-center gap-4 md:gap-6 md:mb-2">
           <button className="hidden md:block text-zinc-400 hover:text-white"><Shuffle size={18} /></button>
-          <button className="text-zinc-400 hover:text-white"><SkipBack size={18} className="md:w-5 md:h-5" /></button>
-          <button onClick={handlePlayPause} className="w-8 h-8 flex items-center justify-center bg-white rounded-full text-black hover:scale-105 transition-transform">
-            {isPlaying ? <Pause size={16} fill="currentColor" /> : <Play size={16} fill="currentColor" className="ml-1" />}
+          <button className="hidden md:block text-zinc-400 hover:text-white"><SkipBack size={18} className="md:w-5 md:h-5" /></button>
+          
+          <button onClick={handlePlayPause} className="w-9 h-9 md:w-8 md:h-8 flex items-center justify-center bg-white rounded-full text-black hover:scale-105 transition-transform shrink-0">
+            {isPlaying ? <Pause size={18} fill="currentColor" /> : <Play size={18} fill="currentColor" className="ml-1" />}
           </button>
-          <button onClick={playNext} className="text-zinc-400 hover:text-white"><SkipForward size={18} className="md:w-5 md:h-5" /></button>
+          
+          <button onClick={playNext} className="text-zinc-400 hover:text-white hidden md:block"><SkipForward size={18} className="md:w-5 md:h-5" /></button>
           <button className="hidden md:block text-zinc-400 hover:text-white"><Repeat size={18} /></button>
         </div>
         
-        <div className="flex items-center w-full gap-2 text-xs text-zinc-400">
+        {/* Desktop Progress Bar */}
+        <div className="hidden md:flex items-center w-full gap-2 text-xs text-zinc-400">
           <span className="w-10 text-right">{formatTime(currentTime)}</span>
           <input 
             type="range" 

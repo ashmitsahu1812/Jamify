@@ -141,15 +141,24 @@ export default function RoomPage() {
             {copied ? 'Copied' : 'Invite'}
           </button>
         </div>
+        
+        {!isHostParam && (
+          <div className="bg-[#1ED760]/10 border border-[#1ED760]/30 text-white p-4 rounded-xl mb-8 flex items-start gap-3 relative z-10">
+            <Play className="text-[#1ED760] shrink-0 mt-0.5" size={20} />
+            <p className="text-sm">
+              <span className="font-bold text-[#1ED760]">Browser Autoplay Blocked?</span> If you don't hear music immediately, manually tap the Play button at the bottom of your screen to join the synchronized audio!
+            </p>
+          </div>
+        )}
 
-        <div className="bg-[#181818] p-6 rounded-xl border border-zinc-800 mb-8">
+        <div className="bg-[#181818] p-6 rounded-xl border border-zinc-800 mb-8 relative z-10">
           <h2 className="text-xl font-bold mb-4">Now Playing</h2>
           {currentTrack ? (
-            <div className="flex flex-col md:flex-row items-center gap-4 md:gap-6">
-              <img src={currentTrack.coverUrl} alt="Cover" className="w-32 h-32 md:w-32 md:h-32 rounded-lg shadow-2xl" />
-              <div className="min-w-0 flex-1 text-center md:text-left">
-                <h3 className="text-2xl font-bold text-white truncate">{currentTrack.title}</h3>
-                <p className="text-lg text-zinc-400 truncate">{currentTrack.artist}</p>
+            <div className="flex flex-col md:flex-row items-center gap-4 md:gap-6 overflow-hidden">
+              <img src={currentTrack.coverUrl} alt="Cover" className="w-48 h-48 md:w-32 md:h-32 rounded-lg shadow-2xl object-cover shrink-0" />
+              <div className="w-full min-w-0 flex-1 text-center md:text-left overflow-hidden">
+                <h3 className="text-xl md:text-2xl font-bold text-white truncate w-full">{currentTrack.title}</h3>
+                <p className="text-base md:text-lg text-zinc-400 truncate w-full">{currentTrack.artist}</p>
               </div>
             </div>
           ) : (

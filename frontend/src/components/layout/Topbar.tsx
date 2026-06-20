@@ -47,16 +47,16 @@ export function Topbar() {
       </div>
 
       {/* Right section: Profile & Extra icons */}
-      <div className="flex items-center gap-4">
+      <div className="flex items-center gap-2 md:gap-4">
         <button 
           onClick={() => alert("Premium features are currently unlocked in this clone!")}
-          className="flex items-center gap-1 text-sm font-semibold bg-white text-black px-4 py-1.5 rounded-full hover:scale-105 transition-transform"
+          className="hidden md:flex items-center gap-1 text-sm font-semibold bg-white text-black px-4 py-1.5 rounded-full hover:scale-105 transition-transform"
         >
           Explore Premium
         </button>
         <button 
           onClick={() => alert("PWA Installation prompt will appear here.")}
-          className="flex items-center gap-1 text-sm font-semibold text-zinc-400 hover:text-white hover:scale-105 transition-all"
+          className="hidden md:flex items-center gap-1 text-sm font-semibold text-zinc-400 hover:text-white hover:scale-105 transition-all"
         >
           <Download size={16} /> Install App
         </button>
