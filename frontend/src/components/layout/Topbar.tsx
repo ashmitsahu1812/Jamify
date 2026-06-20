@@ -1,12 +1,14 @@
 'use client';
 import { ChevronLeft, ChevronRight, Home, Search, Bell, Users, User, Download } from 'lucide-react';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { useAuthStore } from '@/store/useAuthStore';
 import Link from 'next/link';
 
 export function Topbar() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const { user, logout } = useAuthStore();
+  const query = searchParams.get('q') || '';
 
   return (
     <div className="h-16 flex items-center justify-between px-6 bg-[#121212] sticky top-0 z-40">
@@ -30,9 +32,12 @@ export function Topbar() {
           <input 
             type="text" 
             placeholder="What do you want to play?" 
-            onClick={() => router.push('/search')}
+            value={query}
             onChange={(e) => {
-              if (window.location.pathname !== '/search') {
+              const val = e.target.value;
+              if (val) {
+                router.push(`/search?q=${encodeURIComponent(val)}`);
+              } else {
                 router.push('/search');
               }
             }}

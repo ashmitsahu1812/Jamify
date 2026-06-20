@@ -184,7 +184,7 @@ export function Player() {
   if (!currentTrack) return null;
 
   return (
-    <div className="h-24 bg-[#181818] border-t border-zinc-800 flex items-center justify-between px-4 fixed bottom-0 w-full z-50">
+    <div className="h-20 md:h-24 bg-[#181818] border-t border-zinc-800 flex items-center justify-between px-2 md:px-4 fixed bottom-[80px] md:bottom-0 w-full z-40 md:z-50">
       <YouTube
         videoId={currentTrack._id}
         opts={{
@@ -203,14 +203,14 @@ export function Player() {
         className="absolute opacity-0 pointer-events-none"
       />
       {/* Left: Track Info */}
-      <div className="flex items-center w-1/4 min-w-[180px]">
-        <img src={currentTrack.coverUrl} alt="Cover" className="w-14 h-14 rounded-md shadow-lg" />
-        <div className="ml-4 truncate">
-          <p className="text-white text-sm font-semibold hover:underline cursor-pointer truncate">{currentTrack.title}</p>
-          <p className="text-zinc-400 text-xs hover:underline cursor-pointer truncate">{currentTrack.artist}</p>
+      <div className="flex items-center w-1/3 md:w-1/4 min-w-[120px] md:min-w-[180px]">
+        <img src={currentTrack.coverUrl} alt="Cover" className="w-10 h-10 md:w-14 md:h-14 rounded-md shadow-lg" />
+        <div className="ml-2 md:ml-4 overflow-hidden">
+          <p className="text-white text-xs md:text-sm font-semibold hover:underline cursor-pointer truncate">{currentTrack.title}</p>
+          <p className="text-zinc-400 text-[10px] md:text-xs hover:underline cursor-pointer truncate">{currentTrack.artist}</p>
         </div>
         {user && (
-          <div className="flex items-center ml-4 relative">
+          <div className="hidden md:flex items-center ml-4 relative">
             <button onClick={toggleLike} className="text-zinc-400 hover:text-white hover:scale-110 transition-transform mr-3">
               <Heart size={18} fill={isLiked ? "#1ED760" : "transparent"} color={isLiked ? "#1ED760" : "currentColor"} />
             </button>
@@ -241,15 +241,15 @@ export function Player() {
       </div>
 
       {/* Center: Controls */}
-      <div className="flex flex-col items-center justify-center w-2/4 max-w-2xl">
-        <div className="flex items-center gap-6 mb-2">
-          <button className="text-zinc-400 hover:text-white"><Shuffle size={18} /></button>
-          <button className="text-zinc-400 hover:text-white"><SkipBack size={20} /></button>
+      <div className="flex flex-col items-center justify-center w-1/3 md:w-2/4 max-w-2xl">
+        <div className="flex items-center gap-3 md:gap-6 mb-1 md:mb-2">
+          <button className="hidden md:block text-zinc-400 hover:text-white"><Shuffle size={18} /></button>
+          <button className="text-zinc-400 hover:text-white"><SkipBack size={18} className="md:w-5 md:h-5" /></button>
           <button onClick={handlePlayPause} className="w-8 h-8 flex items-center justify-center bg-white rounded-full text-black hover:scale-105 transition-transform">
-            {isPlaying ? <Pause size={18} fill="currentColor" /> : <Play size={18} fill="currentColor" className="ml-1" />}
+            {isPlaying ? <Pause size={16} fill="currentColor" /> : <Play size={16} fill="currentColor" className="ml-1" />}
           </button>
-          <button onClick={playNext} className="text-zinc-400 hover:text-white"><SkipForward size={20} /></button>
-          <button className="text-zinc-400 hover:text-white"><Repeat size={18} /></button>
+          <button onClick={playNext} className="text-zinc-400 hover:text-white"><SkipForward size={18} className="md:w-5 md:h-5" /></button>
+          <button className="hidden md:block text-zinc-400 hover:text-white"><Repeat size={18} /></button>
         </div>
         
         <div className="flex items-center w-full gap-2 text-xs text-zinc-400">
@@ -269,7 +269,7 @@ export function Player() {
       </div>
 
       {/* Right: Volume & Extras */}
-      <div className="flex items-center justify-end w-1/4 min-w-[180px] gap-3 text-zinc-400">
+      <div className="hidden md:flex items-center justify-end w-1/4 min-w-[180px] gap-3 text-zinc-400">
         {roomId && <Mic2 size={18} className="text-[#1ED760]" />}
         <button onClick={toggleMute} className="hover:text-white">
           {isMuted || volume === 0 ? <VolumeX size={20} /> : <Volume2 size={20} />}

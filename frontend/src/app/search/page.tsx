@@ -1,12 +1,16 @@
 'use client';
 import { useState, useEffect } from 'react';
+import { useSearchParams } from 'next/navigation';
 import { usePlayerStore, Track } from '@/store/usePlayerStore';
-import { Play, Search as SearchIcon } from 'lucide-react';
+import { Play } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { API_URL } from '@/config';
 
-export default function SearchPage() {
-  const [query, setQuery] = useState('');
+import { Suspense } from 'react';
+
+function SearchContent() {
+  const searchParams = useSearchParams();
+  const query = searchParams.get('q') || '';
   const [results, setResults] = useState<Track[]>([]);
   const [suggested, setSuggested] = useState<Track[]>([]);
   const [loading, setLoading] = useState(false);
@@ -58,20 +62,6 @@ export default function SearchPage() {
       transition={{ duration: 0.5 }}
       className="p-8 pb-32 max-w-7xl mx-auto"
     >
-      {/* We already have a search bar in Topbar, but keeping this one for /search specific focus if needed */}
-      <div className="mb-8 relative">
-        <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-          <SearchIcon className="h-6 w-6 text-zinc-400" />
-        </div>
-        <input
-          type="text"
-          placeholder="What do you want to listen to?"
-          value={query}
-          onChange={(e) => setQuery(e.target.value)}
-          className="w-full max-w-xl bg-white text-black font-semibold rounded-full py-4 pl-12 pr-4 outline-none focus:ring-2 focus:ring-white border-none shadow-lg text-lg"
-        />
-      </div>
-
       {!query && (
         <div className="mt-8">
           <h2 className="text-2xl font-bold mb-6 text-white">Suggested for you</h2>
@@ -129,5 +119,13 @@ export default function SearchPage() {
         </div>
       )}
     </motion.div>
+  );
+}
+
+export default function SearchPage() {
+  return (
+    <Suspense fallback={<div className="p-8 text-white font-bold">Loading search...</div>}>
+      <SearchContent />
+    </Suspense>
   );
 }

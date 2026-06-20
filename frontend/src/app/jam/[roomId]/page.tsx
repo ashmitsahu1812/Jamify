@@ -89,13 +89,13 @@ export default function RoomPage() {
   };
 
   return (
-    <div className="p-8 pb-32 max-w-6xl mx-auto flex gap-8 h-full">
+    <div className="p-4 md:p-8 pb-32 max-w-6xl mx-auto flex flex-col md:flex-row gap-8 h-full">
       {/* Left Column: Player & Queue */}
       <div className="flex-1 flex flex-col min-w-0">
         <div className="flex items-center justify-between mb-8">
           <div>
-            <h1 className="text-3xl font-bold flex items-center gap-3">
-              <Users className="text-[#1ED760]" size={32} /> 
+            <h1 className="text-2xl md:text-3xl font-bold flex items-center gap-2 md:gap-3">
+              <Users className="text-[#1ED760]" size={28} /> 
               Jam Session <span className="text-zinc-500 font-mono text-xl ml-2">#{roomId}</span>
             </h1>
             <p className="text-zinc-400 mt-2">
@@ -115,9 +115,9 @@ export default function RoomPage() {
         <div className="bg-[#181818] p-6 rounded-xl border border-zinc-800 mb-8">
           <h2 className="text-xl font-bold mb-4">Now Playing</h2>
           {currentTrack ? (
-            <div className="flex items-center gap-6">
-              <img src={currentTrack.coverUrl} alt="Cover" className="w-32 h-32 rounded-lg shadow-2xl" />
-              <div className="min-w-0 flex-1">
+            <div className="flex flex-col md:flex-row items-center gap-4 md:gap-6">
+              <img src={currentTrack.coverUrl} alt="Cover" className="w-32 h-32 md:w-32 md:h-32 rounded-lg shadow-2xl" />
+              <div className="min-w-0 flex-1 text-center md:text-left">
                 <h3 className="text-2xl font-bold text-white truncate">{currentTrack.title}</h3>
                 <p className="text-lg text-zinc-400 truncate">{currentTrack.artist}</p>
               </div>
@@ -146,7 +146,7 @@ export default function RoomPage() {
       </div>
 
       {/* Right Column: Chat Room */}
-      <div className="w-80 bg-[#181818] border border-zinc-800 rounded-xl flex flex-col shrink-0 h-[calc(100vh-200px)]">
+      <div className="w-full md:w-80 bg-[#181818] border border-zinc-800 rounded-xl flex flex-col shrink-0 h-[400px] md:h-[calc(100vh-200px)]">
         <div className="p-4 border-b border-zinc-800 flex items-center gap-2 font-bold">
           <MessageSquare size={18} /> Room Chat
         </div>

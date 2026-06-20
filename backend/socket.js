@@ -22,7 +22,13 @@ module.exports = function initializeSocket(server) {
       
       const roomState = roomStates.get(roomId);
       if (roomState) {
-        socket.emit('room-state-sync', roomState);
+        // Calculate exact playback time based on when it was last updated
+        let syncState = { ...roomState };
+        if (syncState.isPlaying && syncState.lastUpdate) {
+          const elapsedSeconds = (Date.now() - syncState.lastUpdate) / 1000;
+          syncState.currentTime = (syncState.currentTime || 0) + elapsedSeconds;
+        }
+        socket.emit('room-state-sync', syncState);
       }
       
       socket.to(roomId).emit('user-joined', { userId, socketId: socket.id });
