@@ -3,7 +3,6 @@ const express = require('express');
 const http = require('http');
 const cors = require('cors');
 const connectDB = require('./config/db');
-const { connectRedis } = require('./config/redis');
 const initializeSocket = require('./socket');
 
 const authRoutes = require('./routes/auth');
@@ -14,7 +13,6 @@ const server = http.createServer(app);
 
 // Connect Databases
 connectDB();
-connectRedis();
 
 // Middleware
 app.use(cors({

@@ -1,6 +1,7 @@
 const { Server } = require('socket.io');
 const Room = require('./models/Room');
-const { redisClient } = require('./config/redis');
+
+const roomStates = new Map();
 
 module.exports = function initializeSocket(server) {
   const io = new Server(server, {
@@ -19,10 +20,8 @@ module.exports = function initializeSocket(server) {
       socket.join(roomId);
       console.log(`User ${userId || socket.id} joined room ${roomId}`);
       
-      // Optionally fetch current room state from Redis and send it to the user
-      const roomStateStr = await redisClient.get(`room:${roomId}`);
-      if (roomStateStr) {
-        const roomState = JSON.parse(roomStateStr);
+      const roomState = roomStates.get(roomId);
+      if (roomState) {
         socket.emit('room-state-sync', roomState);
       }
       
@@ -31,14 +30,10 @@ module.exports = function initializeSocket(server) {
 
     // Handle Player State Changes (Play, Pause, Seek)
     socket.on('player-state-change', async ({ roomId, state }) => {
-      // state: { type: 'PLAY' | 'PAUSE' | 'SEEK', currentTime: number, trackId?: string }
-      
-      // Update state in Redis
-      const roomStateStr = await redisClient.get(`room:${roomId}`);
-      let roomState = roomStateStr ? JSON.parse(roomStateStr) : {};
+      let roomState = roomStates.get(roomId) || {};
       
       roomState = { ...roomState, ...state, lastUpdate: Date.now() };
-      await redisClient.set(`room:${roomId}`, JSON.stringify(roomState), { EX: 86400 }); // Expire in 1 day
+      roomStates.set(roomId, roomState);
 
       // Broadcast to others in the room
       socket.to(roomId).emit('player-state-sync', state);
@@ -46,27 +41,25 @@ module.exports = function initializeSocket(server) {
 
     // Handle Track Change
     socket.on('track-change', async ({ roomId, track }) => {
-      const roomStateStr = await redisClient.get(`room:${roomId}`);
-      let roomState = roomStateStr ? JSON.parse(roomStateStr) : {};
+      let roomState = roomStates.get(roomId) || {};
       
       roomState.currentTrack = track;
       roomState.isPlaying = true;
       roomState.currentTime = 0;
       roomState.lastUpdate = Date.now();
       
-      await redisClient.set(`room:${roomId}`, JSON.stringify(roomState), { EX: 86400 });
+      roomStates.set(roomId, roomState);
       
       socket.to(roomId).emit('track-sync', track);
     });
 
     // Sync Queue
     socket.on('queue-change', async ({ roomId, queue }) => {
-      const roomStateStr = await redisClient.get(`room:${roomId}`);
-      let roomState = roomStateStr ? JSON.parse(roomStateStr) : {};
+      let roomState = roomStates.get(roomId) || {};
       
       roomState.queue = queue;
       
-      await redisClient.set(`room:${roomId}`, JSON.stringify(roomState), { EX: 86400 });
+      roomStates.set(roomId, roomState);
       
       socket.to(roomId).emit('queue-sync', queue);
     });
