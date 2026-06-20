@@ -234,8 +234,6 @@ export default function RoomPage() {
             )}
           </div>
         </div>
-
-        </div>
       </div>
 
       {/* Right Column: Chat Room (Hidden on Desktop, as RightSidebar handles it) */}
